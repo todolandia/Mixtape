@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mixtape — elige tu nickname</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#120F22;
+    --bg-main:#1B1730;
+    --bg-card:#231D3F;
+    --amber:#E8A33D;
+    --magenta:#FF4D8D;
+    --cream:#F2E9D8;
+    --cream-dim:#C9C0AE;
+    --line:#3A3260;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg-main);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    min-height:100vh;
+    display:flex;flex-direction:column;
+    -webkit-font-smoothing:antialiased;
+  }
+  .display{font-family:'Big Shoulders Display',sans-serif;font-weight:800;letter-spacing:0.01em;}
+  .mono{font-family:'Space Mono',monospace;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+
+  nav{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:28px clamp(20px,5vw,64px);
+    max-width:1200px;margin:0 auto;width:100%;
+  }
+  .logo{font-size:1.6rem;letter-spacing:0.02em;}
+  .logo span{color:var(--magenta);}
+  .signout{
+    background:transparent;border:1px solid var(--line);color:var(--cream-dim);
+    padding:9px 18px;border-radius:2px;font-size:0.85rem;
+  }
+  .signout:hover{border-color:var(--cream-dim);}
+
+  main{
+    flex:1;display:flex;align-items:center;justify-content:center;
+    padding:20px clamp(20px,5vw,64px) 60px;
+  }
+
+  .card{
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:4px;
+    max-width:480px;width:100%;
+    padding:40px clamp(26px,4vw,48px);
+  }
+  .eyebrow-label{
+    display:inline-block;background:var(--cream);color:var(--bg-deep);
+    padding:4px 12px;font-size:0.78rem;transform:rotate(-2deg);
+    font-family:'Space Mono',monospace;margin-bottom:18px;
+  }
+  h1{
+    font-family:'Big Shoulders Display',sans-serif;font-weight:800;
+    font-size:clamp(1.9rem,4vw,2.5rem);line-height:1.05;margin-bottom:14px;
+  }
+  .card-sub{color:var(--cream-dim);font-size:0.96rem;margin-bottom:28px;max-width:44ch;}
+
+  .field{margin-bottom:8px;}
+  .field label{display:block;font-size:0.85rem;color:var(--cream-dim);margin-bottom:6px;font-family:'Space Mono',monospace;}
+  .nick-input-wrap{display:flex;align-items:stretch;}
+  .prefix{
+    background:var(--bg-deep);border:1px solid var(--line);border-right:none;
+    color:var(--cream-dim);padding:12px 14px;border-radius:2px 0 0 2px;
+    font-family:'Space Mono',monospace;font-size:1rem;
+  }
+  .field input{
+    flex:1;width:100%;background:var(--bg-deep);border:1px solid var(--line);
+    color:var(--cream);padding:12px 14px;border-radius:0 2px 2px 0;font-size:1rem;
+    font-family:'Space Mono',monospace;
+  }
+  .field input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:transparent;}
+
+  .hint{font-size:0.8rem;margin-top:8px;min-height:1.2em;}
+  .hint.neutral{color:var(--cream-dim);}
+  .hint.ok{color:#5EC46A;}
+  .hint.error{color:var(--magenta);}
+  .hint.checking{color:var(--amber);}
+
+  .submit-btn{
+    width:100%;background:var(--magenta);color:var(--bg-deep);
+    border:none;padding:14px;font-weight:600;font-size:1rem;border-radius:2px;
+    margin-top:22px;transition:transform .15s ease;
+  }
+  .submit-btn:hover:not(:disabled){transform:translateY(-1px);}
+  .submit-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+  .status-msg{
+    margin-top:16px;font-size:0.9rem;padding:12px 14px;border-radius:2px;display:none;
+  }
+  .status-msg.show{display:block;}
+  .status-msg.error{background:rgba(255,77,141,0.12);color:var(--magenta);border:1px solid rgba(255,77,141,0.3);}
+  .status-msg.ok{background:rgba(94,196,106,0.12);color:#5EC46A;border:1px solid rgba(94,196,106,0.3);}
+
+  footer{
+    text-align:center;padding:24px 20px;color:var(--cream-dim);
+    font-size:0.82rem;font-family:'Space Mono',monospace;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo display">MIX<span>TAPE</span></div>
+  <button class="signout" id="signout-btn">Cerrar sesión</button>
+</nav>
+
+<main>
+  <div class="card">
+    <span class="eyebrow-label mono">side A / track 00</span>
+    <h1 class="display">Elige tu nickname</h1>
+    <p class="card-sub">Es como se va a llamar tu mixtape — único, sin espacios, y no se puede repetir. Lo puedes usar para que tus amigos te encuentren.</p>
+
+    <form id="nickname-form">
+      <div class="field">
+        <label for="nickname">Nickname</label>
+        <div class="nick-input-wrap">
+          <span class="prefix mono">@</span>
+          <input type="text" id="nickname" placeholder="tunombre" maxlength="20" autocomplete="off">
+        </div>
+        <div class="hint neutral" id="hint">3–20 caracteres: letras, números y guión bajo.</div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submit-btn" disabled>Continuar</button>
+    </form>
+
+    <div class="status-msg" id="status"></div>
+  </div>
+</main>
+
+<footer>mixtape — arma tu página, a tu ritmo</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, runTransaction, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCf-QTDYnZaz1TduhABd5E40_PghIOgny4",
+    authDomain: "mixtape-d2f24.firebaseapp.com",
+    projectId: "mixtape-d2f24",
+    storageBucket: "mixtape-d2f24.firebasestorage.app",
+    messagingSenderId: "516883279300",
+    appId: "1:516883279300:web:3119d50448957288134891",
+    measurementId: "G-VWS16HYJR4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const nicknameInput = document.getElementById('nickname');
+  const hintEl = document.getElementById('hint');
+  const submitBtn = document.getElementById('submit-btn');
+  const statusEl = document.getElementById('status');
+  const form = document.getElementById('nickname-form');
+
+  let currentUser = null;
+  let checkTimer = null;
+  let isAvailable = false;
+
+  function showStatus(msg, type){
+    statusEl.textContent = msg;
+    statusEl.className = 'status-msg show ' + type;
+  }
+  function setHint(msg, type){
+    hintEl.textContent = msg;
+    hintEl.className = 'hint ' + type;
+  }
+
+  // ---- auth guard: si no hay sesión, regresa al login ----
+  onAuthStateChanged(auth, async (user) => {
+    if(!user){
+      window.location.href = 'index.html#auth';
+      return;
+    }
+    currentUser = user;
+
+    // si ya tiene nickname, no necesita esta pantalla
+    const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
+    if(userDoc.exists() && userDoc.data().nickname){
+      showStatus('Ya tienes el nickname "' + userDoc.data().nickname + '". Siguiente paso: elegir tu plantilla.', 'ok');
+      submitBtn.disabled = true;
+      nicknameInput.disabled = true;
+    }
+  });
+
+  document.getElementById('signout-btn').addEventListener('click', async ()=>{
+    await signOut(auth);
+    window.location.href = 'index.html';
+  });
+
+  // ---- validar formato ----
+  function formatoValido(nick){
+    return /^[a-zA-Z0-9_]{3,20}$/.test(nick);
+  }
+
+  // ---- revisar disponibilidad en Firestore, con debounce ----
+  nicknameInput.addEventListener('input', ()=>{
+    const raw = nicknameInput.value.trim();
+    isAvailable = false;
+    submitBtn.disabled = true;
+
+    if(checkTimer) clearTimeout(checkTimer);
+
+    if(!raw){
+      setHint('3–20 caracteres: letras, números y guión bajo.', 'neutral');
+      return;
+    }
+    if(!formatoValido(raw)){
+      setHint('Solo letras, números y guión bajo (sin espacios ni acentos).', 'error');
+      return;
+    }
+
+    setHint('Revisando disponibilidad…', 'checking');
+    checkTimer = setTimeout(async ()=>{
+      const nickLower = raw.toLowerCase();
+      const ref = doc(db, 'nicknames', nickLower);
+      const snap = await getDoc(ref);
+      if(snap.exists()){
+        setHint('Ese nickname ya está en uso, prueba otro.', 'error');
+        isAvailable = false;
+        submitBtn.disabled = true;
+      } else {
+        setHint('¡Disponible!', 'ok');
+        isAvailable = true;
+        submitBtn.disabled = false;
+      }
+    }, 450);
+  });
+
+  // ---- guardar nickname (transacción para evitar carreras) ----
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    if(!currentUser || !isAvailable) return;
+
+    const raw = nicknameInput.value.trim();
+    const nickLower = raw.toLowerCase();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Guardando…';
+
+    try{
+      await runTransaction(db, async (tx)=>{
+        const nickRef = doc(db, 'nicknames', nickLower);
+        const nickSnap = await tx.get(nickRef);
+        if(nickSnap.exists()){
+          throw new Error('nickname-tomado');
+        }
+        tx.set(nickRef, { uid: currentUser.uid });
+        tx.set(doc(db, 'usuarios', currentUser.uid), {
+          nickname: raw,
+          nicknameLower: nickLower,
+          email: currentUser.email || null,
+          phone: currentUser.phoneNumber || null,
+          creado: serverTimestamp()
+        }, { merge: true });
+      });
+
+      showStatus('¡Nickname guardado! Siguiente paso: elegir tu plantilla.', 'ok');
+      nicknameInput.disabled = true;
+      submitBtn.textContent = 'Continuar';
+    } catch(err){
+      if(err.message === 'nickname-tomado'){
+        setHint('Justo se lo acaban de quedar, prueba otro.', 'error');
+      } else {
+        showStatus('Algo salió mal guardando tu nickname. Intenta de nuevo.', 'error');
+      }
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Continuar';
+    }
+  });
+</script>
+
+</body>
+</html>
